@@ -74,7 +74,3 @@ def get_users() -> list[dict]:
     # Итоговый путь будет: GET /users/
     # Нам не нужно писать "/users" руками, префикс подставится сам.
     return [{"username": "Rick"}, {"username": "Morty"}]
-
-@router.get("/me")
-def get_current_user() -> dict: 
-    return {"username": "Rick", "role": "admin"}

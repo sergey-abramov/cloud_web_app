@@ -1,24 +1,43 @@
 openapi: 3.0.0
 info:
-  title: Demo Auth API
+  title: Sample API
   version: 1.0.0
 
+# Определение security scheme с JWT authorizer
+components:
+  securitySchemes:
+    jwtAuth:
+      type: openIdConnect
+      openIdConnectUrl: https://iam.api.cloud.yandex.net/iam/v2/applications/<app-id>/.well-known/openid-configuration
+      x-yc-apigateway-authorizer:
+        type: jwt
+        jwksUri: https://iam.api.cloud.yandex.net/iam/v2/applications/<app-id>/.well-known/jwks.json
+        issuers:
+          - https://iam.api.cloud.yandex.net/iam/v2/applications/<app-id>
+        audiences:
+          - <client-id>
+        identitySource:
+          in: header
+          name: Authorization
+          prefix: "Bearer "
+        authorizer_result_ttl_in_seconds: 300
+
+# Применить авторизацию ко всем эндпойнтам
+security:
+  - jwtAuth: []
+
 paths:
-  /{proxy+}:
-    x-yc-apigateway-any-method:
+  /users/api/user:
+    get:
+      summary: Get user info
+      operationId: getUser
       x-yc-apigateway-integration:
         type: serverless_containers
-        container_id: <идентификатор_контейнера>
-        service_account_id: <идентификатор_сервисного_аккаунта>
-      parameters:
-      - explode: false
-        in: path
-        name: proxy
-        required: false
-        schema:
-          default: '-'
-          type: string
-        style: simple
+        container_id: <container-id>
+        service_account_id: <sa-id>
+      responses:
+        '200':
+          description: OK
 
   /health:
     get:
@@ -31,3 +50,19 @@ paths:
       responses:
         '200':
           description: OK
+
+  /users/debug/headers:
+    get:
+      summary: Debug request headers
+      x-yc-apigateway-integration:
+        type: serverless_containers
+        container_id: <container-id>
+        service_account_id: <sa-id>
+      responses:
+        '200':
+          description: OK
+
+  /docs:
+    get:
+      x-yc-apigateway-integration:
+        type: swagger
