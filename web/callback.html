@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Callback</title></head>
+<body>
+    <p>Processing login...</p>
+    <script>
+        // Извлечь id_token из hash fragment (#id_token=...)
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const idToken = params.get('id_token');
+        if (idToken) {
+            localStorage.setItem('id_token', idToken);
+            window.location.href = '/index.html';
+        } else {
+            document.body.innerHTML = '<p>Login failed</p>';
+        }
+    </script>
+</body>
+</html>

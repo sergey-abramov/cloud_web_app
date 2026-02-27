@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  title: Demo Auth API
+  version: 1.0.0
+
+paths:
+  /{proxy+}:
+    x-yc-apigateway-any-method:
+      x-yc-apigateway-integration:
+        type: serverless_containers
+        container_id: <идентификатор_контейнера>
+        service_account_id: <идентификатор_сервисного_аккаунта>
+      parameters:
+      - explode: false
+        in: path
+        name: proxy
+        required: false
+        schema:
+          default: '-'
+          type: string
+        style: simple
+
+  /health:
+    get:
+      summary: Health check (без авторизации для мониторинга)
+      security: []  # Переопределить, чтобы был публичный
+      x-yc-apigateway-integration:
+        type: serverless_containers
+        container_id: <container-id>
+        service_account_id: <sa-id>
+      responses:
+        '200':
+          description: OK

@@ -1,0 +1,19 @@
+docker build --platform=linux/amd64 --pull --rm -f "Dockerfile" -t cloud_web_app:latest "." 
+
+yc container registry create --name cloud-web-app-registry
+
+docker tag cloud_web_app \
+cr.yandex/ид_регистра/cloud_web_app:latest
+
+yc container registry add-access-binding ид_регистра \
+  --role container-registry.images.puller \
+  --subject serviceAccount:ид_аккаунта
+
+docker push \cr.yandex/ид_регистра/cloud_web_app:latest
+
+yc serverless container create --name test5
+
+yc serverless container revision deploy \
+  --container-name test4cloud \
+  --image cr.yandex/ид_регистра/cloud_web_app:latest \
+  --service-account-id ид_аккаунта 
